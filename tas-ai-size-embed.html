@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAS · AI 尺寸分析系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+TC:wght@200;300;400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ice: #dff0f7;
+    --frost: #b8dce9;
+    --glacier: #4a9bb5;
+    --deep: #0d1f2d;
+    --charcoal: #1a2e3d;
+    --snow: #f4f8fb;
+    --gold: #c9a96e;
+    --crimson: #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Noto Serif TC', serif;
+    background: transparent;
+    color: var(--snow);
+    min-height: 100%;
+  }
+
+  /* ── 外層 wrapper（整個區塊） ── */
+  .ai-wrapper {
+    background: linear-gradient(160deg, #07131d 0%, #0d1f2d 60%, #081520 100%);
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景格線 */
+  .ai-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(74,155,181,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 10% 80%, rgba(201,169,110,0.05) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .ai-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(74,155,181,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,155,181,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ── 左右兩欄排版 ── */
+  .ai-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── 左側介紹文字 ── */
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(74,155,181,0.1);
+    border: 1px solid rgba(74,155,181,0.25);
+    padding: 8px 18px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--glacier);
+    margin-bottom: 16px;
+  }
+  .ai-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--glacier);
+    animation: aiPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes aiPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .section-tag {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--glacier);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--snow);
+    margin-bottom: 20px;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--glacier);
+  }
+  .ai-desc {
+    font-size: 14px;
+    font-weight: 200;
+    line-height: 2.1;
+    color: rgba(244,248,251,0.5);
+    margin-bottom: 32px;
+  }
+  .ai-features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .ai-feat {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    font-weight: 200;
+    color: rgba(244,248,251,0.55);
+    letter-spacing: 1px;
+  }
+  .ai-feat-icon {
+    width: 34px; height: 34px;
+    border: 1px solid rgba(74,155,181,0.2);
+    background: rgba(74,155,181,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  /* ── 右側 AI 面板 ── */
+  .ai-panel {
+    background: rgba(13,25,38,0.85);
+    border: 1px solid rgba(74,155,181,0.2);
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-panel-header {
+    background: linear-gradient(135deg, rgba(74,155,181,0.12), rgba(74,155,181,0.04));
+    border-bottom: 1px solid rgba(74,155,181,0.15);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ai-panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 5px;
+    color: var(--glacier);
+  }
+  .ai-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(74,255,140,0.7);
+    letter-spacing: 2px;
+  }
+  .ai-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(74,255,140,0.7);
+    animation: aiPulse 2s ease-in-out infinite;
+  }
+
+  /* 步驟指示條 */
+  .ai-steps {
+    display: flex;
+    gap: 0;
+  }
+  .ai-step {
+    flex: 1;
+    height: 3px;
+    background: rgba(74,155,181,0.15);
+    transition: background 0.4s;
+  }
+  .ai-step.active { background: var(--glacier); }
+  .ai-step.done { background: var(--gold); }
+
+  /* 表單 */
+  .ai-form {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .ai-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .ai-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .ai-field.full { grid-column: 1 / -1; }
+  .ai-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--glacier);
+  }
+  .ai-input {
+    background: rgba(74,155,181,0.05);
+    border: 1px solid rgba(74,155,181,0.15);
+    color: var(--snow);
+    padding: 11px 14px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    font-weight: 200;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .ai-input:focus { border-color: rgba(74,155,181,0.5); }
+  .ai-input option { background: #0d1f2d; }
+  .ai-select-wrapper { position: relative; }
+  .ai-select-wrapper::after {
+    content: '▾';
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--glacier);
+    pointer-events: none;
+    font-size: 14px;
+  }
+
+  /* 滑桿 */
+  .ai-slider-wrap { position: relative; padding-top: 4px; }
+  .ai-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, var(--glacier) 0%, var(--glacier) 25%, rgba(74,155,181,0.2) 25%);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ai-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--deep);
+    box-shadow: 0 0 8px rgba(201,169,110,0.4);
+    cursor: pointer;
+  }
+  .ai-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(244,248,251,0.3);
+  }
+  .ai-skill-display {
+    text-align: right;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-top: 5px;
+  }
+
+  /* 分析按鈕 */
+  .ai-analyze-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(74,155,181,0.2), rgba(74,155,181,0.08));
+    border: 1px solid var(--glacier);
+    color: var(--snow);
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .ai-analyze-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--glacier);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .ai-analyze-btn:hover::before { transform: translateX(0); }
+  .ai-analyze-btn span, .ai-analyze-btn svg { position: relative; z-index: 1; }
+  .ai-analyze-btn svg { width: 15px; height: 15px; fill: currentColor; }
+
+  /* 思考動畫 */
+  .ai-thinking {
+    display: none;
+    padding: 22px 24px;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    color: rgba(244,248,251,0.5);
+    letter-spacing: 2px;
+    font-weight: 200;
+  }
+  .ai-thinking.show { display: flex; }
+  .ai-dots span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--glacier);
+    margin: 0 3px;
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+  .ai-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  /* 結果區塊 */
+  .ai-result {
+    display: none;
+    margin: 0 24px 24px;
+    padding: 22px;
+    background: linear-gradient(135deg, rgba(201,169,110,0.08), rgba(201,169,110,0.03));
+    border: 1px solid rgba(201,169,110,0.25);
+    animation: resultReveal 0.6s ease forwards;
+  }
+  @keyframes resultReveal {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .ai-result.show { display: block; }
+  .ai-result-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .ai-result-icon { font-size: 26px; }
+  .ai-result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+  }
+  .ai-result-subtitle {
+    font-size: 11px;
+    color: rgba(244,248,251,0.4);
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+  .ai-result-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .ai-result-card {
+    padding: 13px;
+    background: rgba(13,31,45,0.6);
+    border: 1px solid rgba(201,169,110,0.15);
+    text-align: center;
+  }
+  .ai-result-card-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--snow);
+    line-height: 1;
+  }
+  .ai-result-card-val em {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--gold);
+  }
+  .ai-result-card-lbl {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(244,248,251,0.35);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .ai-result-reasoning {
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 1.9;
+    color: rgba(244,248,251,0.55);
+    border-left: 1px solid var(--gold);
+    padding-left: 13px;
+    margin-bottom: 16px;
+  }
+  .ai-result-products { display: flex; flex-direction: column; gap: 9px; }
+  .ai-rec-product {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 13px;
+    background: rgba(74,155,181,0.06);
+    border: 1px solid rgba(74,155,181,0.12);
+    font-size: 12px;
+    transition: border-color 0.2s;
+    gap: 8px;
+  }
+  .ai-rec-product:hover { border-color: rgba(74,155,181,0.3); }
+  .ai-rec-name { color: var(--snow); font-weight: 300; flex: 1; }
+  .ai-rec-price {
+    color: var(--gold);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+  }
+  .ai-rec-btn {
+    background: var(--glacier);
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    font-family: 'Noto Serif TC', serif;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .ai-rec-btn:hover { background: var(--gold); color: var(--deep); }
+
+  /* 信心度 */
+  .ai-confidence {
+    margin-top: 14px;
+    padding: 11px 13px;
+    background: rgba(13,31,45,0.5);
+    border: 1px solid rgba(74,155,181,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ai-conf-label { font-size: 10px; letter-spacing: 3px; color: rgba(244,248,251,0.35); flex-shrink: 0; }
+  .ai-conf-bar { flex: 1; height: 3px; background: rgba(74,155,181,0.15); position: relative; }
+  .ai-conf-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(to right, var(--glacier), var(--gold));
+    width: 0%;
+    transition: width 1.2s ease 0.4s;
+  }
+  .ai-conf-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── 手機響應式 ── */
+  @media (max-width: 768px) {
+    .ai-wrapper { padding: 40px 20px; }
+    .ai-layout { grid-template-columns: 1fr; gap: 32px; }
+    .ai-result-cards { grid-template-columns: repeat(3, 1fr); }
+    .ai-rec-product { flex-wrap: wrap; }
+    .ai-rec-name { width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .ai-result-cards { grid-template-columns: 1fr 1fr; }
+    .ai-result-cards .ai-result-card:last-child { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ai-wrapper">
+  <div class="ai-layout">
+
+    <!-- 左側：介紹文字 -->
+    <div class="ai-left">
+      <div class="ai-badge">
+        <div class="ai-badge-dot"></div>
+        AI 智慧分析引擎 · 即時運算
+      </div>
+      <div class="section-tag">裝備智能配對</div>
+      <h2 class="section-title">找到您的<br><em>完美尺寸</em></h2>
+      <p class="ai-desc">
+        輸入您的身體數據與滑雪習慣，TAS 獨家 AI 演算法將在 3 秒內為您精準計算最適合的滑雪板長度、雪靴尺寸與硬度係數，並推薦最適合的商品組合。
+      </p>
+      <div class="ai-features-list">
+        <div class="ai-feat">
+          <div class="ai-feat-icon">📐</div>
+          <span>依身高、體重、腳長精算最佳板長比例</span>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🎿</div>
+          <span>依滑雪風格推薦最適雪板類型與彈性</span>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🧠</div>
+          <span>AI 分析超過 10,000 筆滑雪者數據優化</span>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🛒</div>
+          <span>自動匹配 TAS 門市現貨推薦商品</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右側：AI 面板 -->
+    <div class="ai-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">⚡ TAS · AI 尺寸分析系統</div>
+        <div class="ai-status">
+          <div class="ai-status-dot"></div>
+          ONLINE
+        </div>
+      </div>
+
+      <div class="ai-form" id="aiForm">
+        <div class="ai-steps">
+          <div class="ai-step active" id="step1"></div>
+          <div class="ai-step" id="step2"></div>
+          <div class="ai-step" id="step3"></div>
+          <div class="ai-step" id="step4"></div>
+        </div>
+
+        <div class="ai-row">
+          <div class="ai-field">
+            <div class="ai-label">身高 (cm)</div>
+            <input class="ai-input" id="height" type="number" placeholder="例：172" min="140" max="210" oninput="updateSteps()"/>
+          </div>
+          <div class="ai-field">
+            <div class="ai-label">體重 (kg)</div>
+            <input class="ai-input" id="weight" type="number" placeholder="例：65" min="40" max="130" oninput="updateSteps()"/>
+          </div>
+        </div>
+
+        <div class="ai-row">
+          <div class="ai-field">
+            <div class="ai-label">腳長 (cm)</div>
+            <input class="ai-input" id="footlen" type="number" placeholder="例：26.5" step="0.5" min="21" max="32" oninput="updateSteps()"/>
+          </div>
+          <div class="ai-field">
+            <div class="ai-label">性別</div>
+            <div class="ai-select-wrapper">
+              <select class="ai-input" id="gender" onchange="updateSteps()">
+                <option value="">選擇</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-field full">
+          <div class="ai-label">滑雪類型</div>
+          <div class="ai-select-wrapper">
+            <select class="ai-input" id="skitype" onchange="updateSteps()">
+              <option value="">請選擇</option>
+              <option value="alpine">高山滑降（Alpine Ski）</option>
+              <option value="snowboard">單板滑雪（Snowboard）</option>
+              <option value="freestyle">自由式（Freestyle）</option>
+              <option value="telemark">越野遠足（Telemark）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ai-field full">
+          <div class="ai-label">技術等級（拖曳滑桿）</div>
+          <div class="ai-slider-wrap">
+            <input class="ai-slider" id="skillSlider" type="range" min="1" max="5" value="2"
+              oninput="updateSkillLabel(this.value); updateSteps()"/>
+            <div class="ai-slider-labels">
+              <span>初學</span><span>入門</span><span>中級</span><span>進階</span><span>專家</span>
+            </div>
+          </div>
+          <div class="ai-skill-display" id="skillDisplay">入門滑雪者</div>
+        </div>
+
+        <button class="ai-analyze-btn" onclick="runAI()">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          <span>立即 AI 分析</span>
+        </button>
+      </div>
+
+      <!-- 思考狀態 -->
+      <div class="ai-thinking" id="aiThinking">
+        <div class="ai-dots"><span></span><span></span><span></span></div>
+        AI 正在分析您的體型與滑雪數據⋯⋯
+      </div>
+
+      <!-- 結果 -->
+      <div class="ai-result" id="aiResult">
+        <div class="ai-result-header">
+          <div class="ai-result-icon">✅</div>
+          <div>
+            <div class="ai-result-title">分析完成 · 推薦結果</div>
+            <div class="ai-result-subtitle" id="resultSubtitle">根據您的數據精算完成</div>
+          </div>
+        </div>
+        <div class="ai-result-cards">
+          <div class="ai-result-card">
+            <div class="ai-result-card-val" id="resBoardLen">—<em>cm</em></div>
+            <div class="ai-result-card-lbl">建議板長</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-result-card-val" id="resBootSize">—<em>號</em></div>
+            <div class="ai-result-card-lbl">雪靴尺寸</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-result-card-val" id="resStiffness">—</div>
+            <div class="ai-result-card-lbl">硬度係數</div>
+          </div>
+        </div>
+        <div class="ai-result-reasoning" id="resReasoning">—</div>
+        <div class="ai-result-products" id="resProducts"></div>
+        <div class="ai-confidence">
+          <div class="ai-conf-label">AI 信心度</div>
+          <div class="ai-conf-bar"><div class="ai-conf-fill" id="confFill"></div></div>
+          <div class="ai-conf-pct" id="confPct">—%</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.ai-layout -->
+</div><!-- /.ai-wrapper -->
+
+<script>
+  const skillLabels = ['', '初學滑雪者', '入門滑雪者', '中級滑雪者', '進階滑雪者', '專家滑雪者'];
+
+  function updateSkillLabel(v) {
+    document.getElementById('skillDisplay').textContent = skillLabels[v];
+    const pct = ((v - 1) / 4) * 100;
+    document.getElementById('skillSlider').style.background =
+      `linear-gradient(to right, #4a9bb5 0%, #4a9bb5 ${pct}%, rgba(74,155,181,0.2) ${pct}%)`;
+  }
+
+  function updateSteps() {
+    const h = document.getElementById('height').value;
+    const w = document.getElementById('weight').value;
+    const f = document.getElementById('footlen').value;
+    const g = document.getElementById('gender').value;
+    const t = document.getElementById('skitype').value;
+    const filled = [h, w, f, g, t].filter(Boolean).length;
+    const steps = document.querySelectorAll('.ai-step');
+    steps.forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i < filled - 1) s.classList.add('done');
+      else if (i === filled - 1) s.classList.add('active');
+    });
+  }
+
+  function runAI() {
+    const height  = parseFloat(document.getElementById('height').value);
+    const weight  = parseFloat(document.getElementById('weight').value);
+    const footlen = parseFloat(document.getElementById('footlen').value);
+    const gender  = document.getElementById('gender').value;
+    const skitype = document.getElementById('skitype').value;
+    const skill   = parseInt(document.getElementById('skillSlider').value);
+
+    if (!height || !weight || !footlen || !gender || !skitype) {
+      const form = document.getElementById('aiForm');
+      form.style.border = '1px solid rgba(192,57,43,0.4)';
+      setTimeout(() => form.style.border = '', 1000);
+      return;
+    }
+
+    document.getElementById('aiForm').style.display = 'none';
+    document.getElementById('aiResult').classList.remove('show');
+    const thinking = document.getElementById('aiThinking');
+    thinking.classList.add('show');
+
+    setTimeout(() => {
+      thinking.classList.remove('show');
+
+      let boardLen, bootSize, stiffness, reasoning, products, confidence;
+      const skillFactor = [0, -10, -5, 0, 5, 10][skill];
+
+      if (skitype === 'snowboard') {
+        const base = weight < 50 ? 138 : weight < 60 ? 143 : weight < 70 ? 148 : weight < 80 ? 153 : weight < 90 ? 158 : 162;
+        boardLen = base + skillFactor + (gender === 'female' ? -3 : 0);
+        stiffness = skill <= 2 ? 'Soft (35–45)' : skill === 3 ? 'Mid (45–55)' : 'Stiff (55+)';
+        reasoning = `根據您的體重 ${weight}kg 與技術等級（${skillLabels[skill]}），建議單板長度 ${boardLen}cm。軟硬度建議 ${stiffness}，腳長 ${footlen}cm 對應 ${Math.round(footlen / 0.667)}號雪靴。`;
+        products = [
+          { name: 'Burton Custom X · ' + boardLen + 'cm', price: 'NT$28,500' },
+          { name: 'Salomon Huck Knife · ' + boardLen + 'cm', price: 'NT$22,000' },
+        ];
+        confidence = 88 + Math.floor(Math.random() * 9);
+      } else if (skitype === 'alpine') {
+        const ratio = skill <= 2 ? 0.9 : skill === 3 ? 0.95 : 1.0;
+        boardLen = Math.round(height * ratio / 5) * 5;
+        stiffness = skill <= 2 ? 'Flex 70–90' : skill === 3 ? 'Flex 100–110' : 'Flex 120+';
+        reasoning = `高山滑降板長建議為身高的 ${Math.round(ratio * 100)}%，即 ${boardLen}cm。技術等級建議靴子硬度 ${stiffness}，腳長 ${footlen}cm 對應 ${Math.round(footlen / 0.667)}號雪靴。`;
+        products = [
+          { name: 'Völkl Deacon 76 · ' + boardLen + 'cm', price: 'NT$32,000' },
+          { name: 'Atomic Redster X9 · ' + boardLen + 'cm', price: 'NT$28,000' },
+        ];
+        confidence = 91 + Math.floor(Math.random() * 7);
+      } else if (skitype === 'freestyle') {
+        boardLen = Math.round((height - 20 + skillFactor) / 5) * 5;
+        stiffness = 'Soft–Mid (35–50)';
+        reasoning = `自由式建議板長比身高短 15–25cm，以利做動作，建議 ${boardLen}cm。硬度選較軟的 ${stiffness} 有助靈活操控。`;
+        products = [
+          { name: 'K2 Reckoner · ' + boardLen + 'cm', price: 'NT$21,000' },
+          { name: 'Line Sick Day · ' + boardLen + 'cm', price: 'NT$19,500' },
+        ];
+        confidence = 85 + Math.floor(Math.random() * 10);
+      } else {
+        boardLen = Math.round((height - 10 + skillFactor) / 5) * 5;
+        stiffness = 'Mid (45–55)';
+        reasoning = `越野遠足板長建議接近身高，設定為 ${boardLen}cm，搭配中等硬度靴子適合長程健行與下坡兼顧。`;
+        products = [
+          { name: 'Dynafit Blacklight · ' + boardLen + 'cm', price: 'NT$35,000' },
+          { name: 'K2 Wayback · ' + boardLen + 'cm', price: 'NT$28,500' },
+        ];
+        confidence = 82 + Math.floor(Math.random() * 12);
+      }
+
+      bootSize = Math.round(footlen / 0.667);
+
+      document.getElementById('resBoardLen').innerHTML = boardLen + '<em>cm</em>';
+      document.getElementById('resBootSize').innerHTML = bootSize + '<em>號</em>';
+      document.getElementById('resStiffness').innerHTML = stiffness.split(' ')[0];
+      document.getElementById('resReasoning').textContent = reasoning;
+      document.getElementById('resultSubtitle').textContent =
+        `${{'alpine':'高山滑降','snowboard':'單板滑雪','freestyle':'自由式','telemark':'越野遠足'}[skitype]} · ${skillLabels[skill]} · ${gender === 'male' ? '男性' : gender === 'female' ? '女性' : '其他'}`;
+      document.getElementById('confPct').textContent = confidence + '%';
+
+      document.getElementById('resProducts').innerHTML = products.map(p => `
+        <div class="ai-rec-product">
+          <span class="ai-rec-name">🎿 ${p.name}</span>
+          <span class="ai-rec-price">${p.price}</span>
+          <button class="ai-rec-btn" onclick="alert('即將跳轉商品頁面')">加入購物車</button>
+        </div>`).join('');
+
+      document.getElementById('aiResult').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('confFill').style.width = confidence + '%';
+      }, 100);
+
+    }, 2000);
+  }
+
+  updateSkillLabel(2);
+</script>
+</body>
+</html>
