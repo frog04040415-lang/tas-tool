@@ -26,6 +26,26 @@
         .percent-box { font-size: 72px; font-weight: 800; color: var(--tas-gold); margin: 10px 0; font-family: 'Arial Black', sans-serif; }
         .report-text { background: #2a2a2a; padding: 20px; border-radius: 12px; text-align: left; font-size: 15px; line-height: 1.6; margin-top: 20px; }
         .rec-tag { display: inline-block; background: var(--tas-gold); color: black; padding: 4px 12px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
+
+        /* =========================================
+       新增：修復建議連結在深色背景下的對比度
+       ========================================= */
+    
+    /* 1. 設定未點擊過的連結 (也包含已點擊過) 的顏色為金色 */
+    .product-link {
+        display: inline-block;
+        color: #D4AF37 !important; /* 強制使用金色，避免被 shopline 默認樣式吃掉 */
+        text-decoration: underline; /* 加上下底線，讓它看起來更像連結 */
+        font-weight: 500;
+        margin: 5px 10px 5px 0; /* 在連結之間加一點間距 */
+        transition: color 0.3s ease; /* 增加滑鼠移過去時的平滑效果 */
+    }
+
+    /* 2. 當滑鼠移上去 (Hover) 時，改成橘色，並去掉下底線 */
+    .product-link:hover {
+        color: #FF5722 !important; /* 改成橘色 */
+        text-decoration: none; /* 移上去時去掉下底線 */
+    }
     </style>
 </head>
 <body>
