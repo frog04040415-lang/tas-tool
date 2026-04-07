@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAS | 滑雪冒險者實力鑑定</title>
+    <style>
+        :root { --tas-gold: #D4AF37; --tas-orange: #FF5722; --tas-bg: #0f0f0f; --tas-card: #1e1e1e; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, "PingFang TC", sans-serif; background-color: var(--tas-bg); color: #ffffff; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .quiz-card { width: 90%; max-width: 480px; background: var(--tas-card); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid #333; }
+        h1 { color: var(--tas-gold); font-size: 28px; margin-bottom: 10px; letter-spacing: 2px; }
+        p.subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
+        .step { text-align: left; margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 12px; color: #eee; font-size: 15px; }
+        select { width: 100%; padding: 12px; border-radius: 8px; background: #2a2a2a; color: white; border: 1px solid #444; appearance: none; }
+        .gear-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .gear-item { background: #2a2a2a; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
+        .gear-item input { margin-right: 8px; }
+        .gear-item:hover { border-color: var(--tas-orange); }
+        .cta-button { width: 100%; background: linear-gradient(135deg, var(--tas-orange), #d84315); color: white; border: none; padding: 16px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: transform 0.2s; }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,87,34,0.4); }
+
+        /* 結果頁面 */
+        #result-page { display: none; text-align: center; }
+        .rank-title { font-size: 18px; color: var(--tas-orange); font-weight: bold; text-transform: uppercase; }
+        .percent-box { font-size: 72px; font-weight: 800; color: var(--tas-gold); margin: 10px 0; font-family: 'Arial Black', sans-serif; }
+        .report-text { background: #2a2a2a; padding: 20px; border-radius: 12px; text-align: left; font-size: 15px; line-height: 1.6; margin-top: 20px; }
+        .rec-tag { display: inline-block; background: var(--tas-gold); color: black; padding: 4px 12px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-card" id="quiz-page">
+        <h1>TAS PERFORMANCE</h1>
+        <p class="subtitle">輸入數據，定位你的雪道極限</p>
+
+        <div class="step">
+            <label>1. 滑雪程度分級</label>
+            <select id="user-level">
+                <option value="1">Lv.1 預備進入雪季的挑戰者</option>
+                <option value="2">Lv.2 初試啼聲 (1-2次經驗)</option>
+                <option value="3">Lv.3 入門級 (穩定落葉飄)</option>
+                <option value="4">Lv.4 初中級 (S-Turn 探索中)</option>
+                <option value="5">Lv.5 中級 (流暢征服紅線)</option>
+                <option value="6">Lv.6 進階 (挑戰黑線/不整地)</option>
+                <option value="7">Lv.7 專家 (全地形統治者)</option>
+            </select>
+        </div>
+
+        <div class="step">
+            <label>2. 冒險頻率 (出國滑雪次數)</label>
+            <select id="user-freq">
+                <option value="3">極高 (每年 2 次以上)</option>
+                <option value="2">穩定 (每年 1 次)</option>
+                <option value="1">觀察 (兩年 1 次)</option>
+            </select>
+        </div>
+
+        <div class="step">
+            <label>3. 現有武裝 (擁有裝備)</label>
+            <div class="gear-options">
+                <label class="gear-item"><input type="checkbox" name="gear" value="goggle"> 雪鏡</label>
+                <label class="gear-item"><input type="checkbox" name="gear" value="helmet"> 頭盔</label>
+                <label class="gear-item"><input type="checkbox" name="gear" value="jacket"> 雪衣</label>
+                <label class="gear-item"><input type="checkbox" name="gear" value="pants"> 雪褲</label>
+                <label class="gear-item"><input type="checkbox" name="gear" value="protector"> 防摔褲</label>
+            </div>
+        </div>
+
+        <button class="cta-button" onclick="analyzePerformance()">計算我的競爭力排名</button>
+    </div>
+
+    <div class="quiz-card" id="result-page">
+        <div class="rank-title" id="rank-name">定位中...</div>
+        <p>你已擊敗全台</p>
+        <div class="percent-box"><span id="final-percent">0</span>%</div>
+        <p>的滑雪玩家</p>
+        
+        <div class="report-text" id="report-content">
+            </div>
+
+        <button class="cta-button" onclick="window.location.reload()">重新鑑定</button>
+    </div>
+
+    <script>
+        function analyzePerformance() {
+            const level = parseInt(document.getElementById('user-level').value);
+            const freq = parseInt(document.getElementById('user-freq').value);
+            const selectedGears = document.querySelectorAll('input[name="gear"]:checked');
+            const gearList = Array.from(selectedGears).map(g => g.value);
+
+            // 競爭力權重邏輯
+            let baseScore = (level * 10) + (freq * 5) + (gearList.length * 3);
+            let winPercent = 0;
+            let rankName = "";
+
+            if (baseScore >= 80) {
+                winPercent = Math.floor(Math.random() * (99 - 95 + 1) + 95);
+                rankName = "Powder Legend | 粉雪傳說";
+            } else if (baseScore >= 60) {
+                winPercent = Math.floor(Math.random() * (94 - 75 + 1) + 75);
+                rankName = "Black Diamond Chaser | 黑鑽挑戰者";
+            } else if (baseScore >= 40) {
+                winPercent = Math.floor(Math.random() * (74 - 45 + 1) + 45);
+                rankName = "Ambitious Carver | 進取滑行者";
+            } else {
+                winPercent = Math.floor(Math.random() * (44 - 15 + 1) + 15);
+                rankName = "Rising Star | 雪道新星";
+            }
+
+            document.getElementById('final-percent').innerText = winPercent;
+            document.getElementById('rank-name').innerText = rankName;
+            
+            // 生成建議
+            let reportHTML = `<span class="rec-tag">TAS 戰力分析</span><br>`;
+            
+            if (level >= 5 && !gearList.includes('helmet')) {
+                reportHTML += `你的技術已進入高階領域，但在 75% 的同級玩家中，<strong>「頭部安全」</strong>是他們敢於挑戰更高難度的底氣。建議升級 TAS 碳纖維頭盔，釋放你的極限。`;
+            } else if (level < 4 && !gearList.includes('protector')) {
+                reportHTML += `你正處於進步最快的階段。數據顯示，穿著專業防摔褲的學員，練習效率比一般人高出 40%。別讓摔傷阻礙你贏過下一個 20% 的人。`;
+            } else {
+                reportHTML += `表現優異！要進入前 5% 的傳說殿堂，裝備的細微反饋至關重要。建議關注 TAS 技術專欄：如何微調裝備以應對極端地形。`;
+            }
+
+            document.getElementById('report-content').innerHTML = reportHTML;
+            document.getElementById('quiz-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
