@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAS | The Advanced Standard - 專業雪鏡領導品牌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #0f172a; color: white; }
+        .hero-video-overlay { background: linear-gradient(0deg, rgba(15,23,42,1) 0%, rgba(15,23,42,0.3) 50%, rgba(15,23,42,0.8) 100%); }
+        .tech-card:hover { transform: translateY(-10px); transition: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <nav class="fixed w-full z-50 px-8 py-4 flex justify-between items-center bg-slate-900/80 backdrop-blur-md">
+        <div class="text-2xl font-bold tracking-tighter">TAS</div>
+        <div class="space-x-8 hidden md:flex text-sm uppercase tracking-widest">
+            <a href="#" class="hover:text-blue-400 transition">首頁</a>
+            <a href="#tech" class="hover:text-blue-400 transition">核心技術</a>
+            <a href="#lab" class="hover:text-blue-400 transition">教練合作</a>
+            <a href="#store" class="hover:text-blue-400 transition">體驗據點</a>
+        </div>
+        <button class="bg-blue-600 px-4 py-2 rounded-full text-xs font-bold hover:bg-blue-500 transition">加入進化者俱樂部</button>
+    </nav>
+
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover opacity-60" alt="Skiing POV">
+            <div class="hero-video-overlay absolute inset-0"></div>
+        </div>
+        
+        <div class="relative z-10 text-center space-y-6 px-4">
+            <p class="text-blue-400 font-bold tracking-[0.3em] uppercase animate-pulse">2026 Q2 Collection</p>
+            <h1 class="text-6xl md:text-8xl font-black italic">THE ADVANCED STANDARD</h1>
+            <p class="text-xl text-slate-300 max-w-2xl mx-auto">手持 GoPro 的第一視角，穿梭於極限雪場。TAS 帶領你穿越天氣與雪道的邊界。</p>
+            <div class="pt-8">
+                <button class="border-2 border-white px-8 py-3 hover:bg-white hover:text-slate-900 transition font-bold uppercase tracking-widest">觀賞品牌大片</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-blue-600 py-4 overflow-hidden">
+        <div class="whitespace-nowrap flex space-x-20 animate-[marquee_20s_linear_infinite]">
+            <span class="text-2xl font-black italic">TAS, THE ADVANCED STANDARD.</span>
+            <span class="text-2xl font-black italic">TAS, THE ADVANCED STANDARD.</span>
+            <span class="text-2xl font-black italic">TAS, THE ADVANCED STANDARD.</span>
+            <span class="text-2xl font-black italic">TAS, THE ADVANCED STANDARD.</span>
+        </div>
+    </div>
+
+    <section class="py-20 bg-slate-800 text-center">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-4">解鎖你的進化潛能</h2>
+            <p class="text-slate-400 mb-8">參與互動測試，獲取你的專屬雪場裝備清單</p>
+            <a href="#" class="inline-block bg-white text-slate-900 px-10 py-4 rounded-sm font-bold hover:bg-blue-400 hover:text-white transition">進入互動遊戲 <i class="fa-solid fa-gamepad ml-2"></i></a>
+        </div>
+    </section>
+
+    <section id="tech" class="py-24 container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2">
+                <h2 class="text-5xl font-bold mb-8">TAS ADVANCED<br><span class="text-blue-500">核心技術</span></h2>
+                <div class="space-y-8">
+                    <div class="tech-card bg-slate-800 p-6 border-l-4 border-blue-500">
+                        <h3 class="text-xl font-bold mb-2">掀蓋 x 變色技術</h3>
+                        <p class="text-slate-400">適應各種光線變化，從陰天到強光瞬間切換視界。</p>
+                    </div>
+                    <div class="tech-card bg-slate-800 p-6 border-l-4 border-blue-500">
+                        <h3 class="text-xl font-bold mb-2">微米級 UV Technology</h3>
+                        <p class="text-slate-400">全天候抵禦高山強烈紫外線，保護眼部健康。</p>
+                    </div>
+                    <div class="tech-card bg-slate-800 p-6 border-l-4 border-blue-500">
+                        <h3 class="text-xl font-bold mb-2">ESA 防摔防撞系統</h3>
+                        <p class="text-slate-400">航太級耐衝擊材質，為你的極限運動提供最後一道防線。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <img src="https://images.unsplash.com/photo-1520629411511-eb4447be22e9?auto=format&fit=crop&q=80&w=800" alt="Tech" class="rounded-lg shadow-2xl">
+            </div>
+        </div>
+    </section>
+
+    <section id="lab" class="py-24 bg-white text-slate-900">
+        <div class="container mx-auto px-4 text-center">
+            <p class="font-bold text-blue-600 mb-2">COACH COLLABORATION LAB</p>
+            <h2 class="text-4xl font-black mb-12 italic">教練推薦：專業級磁吸雪鏡</h2>
+            <div class="relative max-w-4xl mx-auto group cursor-pointer">
+                <div class="overflow-hidden rounded-xl bg-slate-100 p-10">
+                    <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&q=80&w=800" alt="Goggles" class="mx-auto w-full max-w-md transform group-hover:scale-105 transition duration-500">
+                    <div class="mt-8">
+                        <span class="text-6xl font-black block tracking-widest text-slate-200">TAS GOGGLES</span>
+                        <p class="text-2xl font-bold mt-2">磁吸秒換鏡片，極速進化</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="store" class="py-24 grid md:grid-cols-2">
+        <div class="bg-slate-900 p-20 flex flex-col justify-center border-r border-slate-800">
+            <h3 class="text-3xl font-bold mb-4">體驗據點</h3>
+            <p class="text-slate-400 mb-6">親身感受 TAS 技術的溫度，全台 5 間直營據點提供專業試戴諮詢。</p>
+            <button class="text-blue-400 font-bold hover:underline">尋找最近的店鋪 →</button>
+        </div>
+        <div class="bg-blue-600 p-20 flex flex-col justify-center">
+            <h3 class="text-3xl font-bold mb-4">加入進化者俱樂部</h3>
+            <p class="text-blue-100 mb-6">NOW, 加入 Club 獲取最新產品資訊與專屬活動優先權。</p>
+            <div class="flex">
+                <input type="email" placeholder="Email Address" class="bg-white/20 border border-white/30 p-4 flex-grow outline-none placeholder:text-blue-200">
+                <button class="bg-white text-blue-600 px-8 font-bold">JOIN</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 text-center">
+        <h2 class="text-3xl md:text-5xl font-black mb-4">TAS, 讓專業，支持你的進化。</h2>
+        <div class="flex justify-center space-x-6 mt-12 text-slate-500">
+            <i class="fa-brands fa-instagram text-2xl hover:text-white cursor-pointer"></i>
+            <i class="fa-brands fa-youtube text-2xl hover:text-white cursor-pointer"></i>
+            <i class="fa-brands fa-facebook text-2xl hover:text-white cursor-pointer"></i>
+        </div>
+        <p class="mt-8 text-xs text-slate-600">© 2026 TAS THE ADVANCED STANDARD. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <style>
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</body>
+</html>
