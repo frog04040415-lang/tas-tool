@@ -84,48 +84,62 @@
 
     <script>
         function analyzePerformance() {
-            const level = parseInt(document.getElementById('user-level').value);
-            const freq = parseInt(document.getElementById('user-freq').value);
-            const selectedGears = document.querySelectorAll('input[name="gear"]:checked');
-            const gearList = Array.from(selectedGears).map(g => g.value);
+    const level = parseInt(document.getElementById('user-level').value);
+    const freq = parseInt(document.getElementById('user-freq').value);
+    const selectedGears = document.querySelectorAll('input[name="gear"]:checked');
+    const gearList = Array.from(selectedGears).map(g => g.value);
 
-            // 競爭力權重邏輯
-            let baseScore = (level * 10) + (freq * 5) + (gearList.length * 3);
-            let winPercent = 0;
-            let rankName = "";
+    // 1. 定義所有裝備清單與對應連結 (請自行修改為 TAS 官網正確網址)
+    const gearMap = {
+        'goggle': { name: '專業抗霧雪鏡', link: '/products/goggles' },
+        'helmet': { name: '高剛性安全頭盔', link: '/products/helmets' },
+        'jacket': { name: '頂級機能雪衣', link: '/products/jackets' },
+        'pants': { name: '高耐磨防水雪褲', link: '/products/pants' },
+        'protector': { name: '高動態極限防摔褲', link: '/products/protectors' }
+    };
 
-            if (baseScore >= 80) {
-                winPercent = Math.floor(Math.random() * (99 - 95 + 1) + 95);
-                rankName = "Powder Legend | 粉雪傳說";
-            } else if (baseScore >= 60) {
-                winPercent = Math.floor(Math.random() * (94 - 75 + 1) + 75);
-                rankName = "Black Diamond Chaser | 黑鑽挑戰者";
-            } else if (baseScore >= 40) {
-                winPercent = Math.floor(Math.random() * (74 - 45 + 1) + 45);
-                rankName = "Ambitious Carver | 進取滑行者";
-            } else {
-                winPercent = Math.floor(Math.random() * (44 - 15 + 1) + 15);
-                rankName = "Rising Star | 雪道新星";
-            }
+    // 2. 找出使用者「沒有」的裝備
+    const missingGears = Object.keys(gearMap).filter(item => !gearList.includes(item));
 
-            document.getElementById('final-percent').innerText = winPercent;
-            document.getElementById('rank-name').innerText = rankName;
-            
-            // 生成建議
-            let reportHTML = `<span class="rec-tag">TAS 戰力分析</span><br>`;
-            
-            if (level >= 5 && !gearList.includes('helmet')) {
-                reportHTML += `你的技術已進入高階領域，但在 75% 的同級玩家中，<strong>「頭部安全」</strong>是他們敢於挑戰更高難度的底氣。建議升級 TAS 碳纖維頭盔，釋放你的極限。`;
-            } else if (level < 4 && !gearList.includes('protector')) {
-                reportHTML += `你正處於進步最快的階段。數據顯示，穿著專業防摔褲的學員，練習效率比一般人高出 40%。別讓摔傷阻礙你贏過下一個 20% 的人。`;
-            } else {
-                reportHTML += `表現優異！要進入前 5% 的傳說殿堂，裝備的細微反饋至關重要。建議關注 TAS 技術專欄：如何微調裝備以應對極端地形。`;
-            }
+    // 3. 競爭力排名計算
+    let baseScore = (level * 10) + (freq * 5) + (gearList.length * 3);
+    let winPercent = 0;
+    let rankName = "";
 
-            document.getElementById('report-content').innerHTML = reportHTML;
-            document.getElementById('quiz-page').style.display = 'none';
-            document.getElementById('result-page').style.display = 'block';
-        }
+    if (baseScore >= 80) {
+        winPercent = Math.floor(Math.random() * (99 - 95 + 1) + 95);
+        rankName = "Powder Legend | 粉雪傳說";
+    } else if (baseScore >= 60) {
+        winPercent = Math.floor(Math.random() * (94 - 75 + 1) + 75);
+        rankName = "Black Diamond Chaser | 黑鑽挑戰者";
+    } else {
+        winPercent = Math.floor(Math.random() * (74 - 30 + 1) + 30);
+        rankName = "Ambitious Carver | 進取滑行者";
+    }
+
+    document.getElementById('final-percent').innerText = winPercent;
+    document.getElementById('rank-name').innerText = rankName;
+    
+    // 4. 生成動態建議報告
+    let reportHTML = `<span class="rec-tag">裝備差距分析</span><br>`;
+    
+    if (missingGears.length > 0) {
+        reportHTML += `<p>要維持 <strong>${winPercent}%</strong> 的領先地位，數據顯示你還缺少以下關鍵武裝：</p><div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">`;
+        
+        missingGears.forEach(key => {
+            reportHTML += `<a href="${gearMap[key].link}" target="_parent" class="product-link" style="margin: 0; font-size: 13px;">補齊 ${gearMap[key].name} ➔</a>`;
+        });
+        
+        reportHTML += `</div><p style="font-size: 13px; color: #888; margin-top: 15px;">※ 專業玩家通常擁有完整套裝以因應極端天氣變化。</p>`;
+    } else {
+        reportHTML += `<p><strong>戰力值滿點！</strong> 你已擁有全套 TAS 專業武裝。建議關注我們的進階調校文章，發揮裝備的 100% 潛能。</p>
+                       <a href="/blogs/news" target="_parent" class="product-link">閱讀專家專欄</a>`;
+    }
+
+    document.getElementById('report-content').innerHTML = reportHTML;
+    document.getElementById('quiz-page').style.display = 'none';
+    document.getElementById('result-page').style.display = 'block';
+}
     </script>
 </body>
 </html>
